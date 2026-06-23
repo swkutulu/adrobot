@@ -1,13 +1,12 @@
 import argparse
 from time import perf_counter
-from typing import Tuple
+from typing import Tuple, List, Final
 from functools import reduce
 import requests
 import statistics
 
 
-# DEFAULT_URL = 'https://svs.gsfc.nasa.gov/vis/a030000/a030800/a030877/frames/5760x3240_16x9_01p/BlackMarble_2016_464m_caribbean_labeled.png'
-DEFAULT_URL = 'https://speedtest.selectel.ru/10MB'
+DEFAULT_URL: Final = 'https://speedtest.selectel.ru/10MB'
 
 
 def error(output):
@@ -26,7 +25,7 @@ class AppError(Exception):
     pass
 
 
-def _req(url: str) -> Tuple[int, int]:
+def _req(url: str) -> Tuple[float, int]:
     size = 0
     time_start = perf_counter()
     r = requests.get(url)
@@ -38,8 +37,8 @@ def _req(url: str) -> Tuple[int, int]:
 
 
 def main(url: str, count: int) -> None:
-    size = 0
-    times = []
+    size: int = 0
+    times: List[float] = []
     try:
         for _ in range(count):
             time, s = _req(url)
@@ -47,7 +46,7 @@ def main(url: str, count: int) -> None:
             if s != size and size != 0:
                 error(f'Размер ответа изменился: {size} -> {s}')
             size = s
-        time_avg = reduce(lambda x, y: x + y, times, 0) / count
+        time_avg = reduce(lambda x, y: x + y, times, 0.0) / count
         # print(times, size)
         success(f"Среднее время запроса [сек]: {time_avg:.4f}")
         success(f"Средняя скорость [Мбит/с]: {8 * size / 1024 / 1024 / time_avg:.2f}")
