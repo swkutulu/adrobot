@@ -44,7 +44,7 @@ def main(url: str, count: int) -> None:
             time, s = _req(url)
             times.append(time)
             if s != size and size != 0:
-                error(f'Размер ответа изменился: {size} -> {s}')
+                raise AppError(f'В процессе измерения скорости размер ответа изменился: {size} -> {s}')
             size = s
         time_avg = reduce(lambda x, y: x + y, times, 0.0) / count
         # print(times, size)
